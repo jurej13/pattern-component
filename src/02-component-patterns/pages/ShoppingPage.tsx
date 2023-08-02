@@ -1,29 +1,9 @@
-import { useState } from "react"
 import { ProductCard } from "../components"
-import { Product } from "../interfaces/interfaces"
 import "../styles/custom-styles.css"
-
-const product1 = {
-	id: "1",
-	title: "Coffee Mug - Card",
-	img: "./coffee-mug.png",
-}
-const product2 = {
-	id: "2",
-	title: "Coffee Mug - Card",
-	img: "./coffee-mug2.png",
-}
-const products: Product[] = [product1, product2]
-
-interface ProductInCart extends Product {
-	count: number
-}
-
+import { useShoppingCart } from "../hooks/useShoppingCart"
+import { products } from "../data/products"
 export const ShoppingPage = () => {
-	const [shoppingCart, setShoppingCart] = useState<{
-		[key: string]: ProductInCart
-	}>({})
-
+	const { shoppingCart, onProductCountChange } = useShoppingCart()
 	return (
 		<div>
 			<h1>Shopping Store</h1>
@@ -40,6 +20,8 @@ export const ShoppingPage = () => {
 						key={product.id}
 						product={product}
 						className='bg-dark text-white'
+						onChange={onProductCountChange}
+						value={shoppingCart[product.id]?.count || 0}
 					>
 						<ProductCard.Image className='custom-image' />
 						<ProductCard.Title className='text-bold' />
@@ -48,24 +30,22 @@ export const ShoppingPage = () => {
 				))}
 			</div>
 			<div className='shopping-cart'>
-				<ProductCard
-					product={product2}
-					className='bg-dark text-white'
-					style={{ width: "100px" }}
-				>
-					<ProductCard.Image className='custom-image' />
-					<ProductCard.Title className='text-bold' />
-					<ProductCard.Buttons className='custom-buttons' />
-				</ProductCard>
-				<ProductCard
-					product={product1}
-					className='bg-dark text-white'
-					style={{ width: "100px" }}
-				>
-					<ProductCard.Image className='custom-image' />
-					<ProductCard.Title className='text-bold' />
-					<ProductCard.Buttons className='custom-buttons' />
-				</ProductCard>
+				{Object.entries(shoppingCart).map(([key, product]) => (
+					<ProductCard
+						product={product}
+						className='bg-dark text-white'
+						style={{ width: "100px" }}
+						key={key}
+						value={product.count}
+						onChange={onProductCountChange}
+					>
+						<ProductCard.Image className='custom-image' />
+						<ProductCard.Buttons
+							className='custom-buttons'
+							style={{ display: "flex", justifyContent: "center" }}
+						/>
+					</ProductCard>
+				))}
 			</div>
 		</div>
 	)
